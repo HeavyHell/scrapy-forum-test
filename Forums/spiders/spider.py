@@ -50,11 +50,18 @@ class MedSpider(CrawlSpider):
             item['username'] = topic_content.xpath('.//td[@class="row2"]/a/text()').extract_first()
             item['date'] = topic_content.xpath('.//div[@style="float:left;"]/text()').extract_first()
 
+        if 'order' in response.meta:
+            order = response.meta['order']
+        else:
+            order = 1
+
         next = sel.xpath('//a[./text()="Далее"]/@href').extract_first(default='')
         for post in table:
             comment = CommentItem()
             comment['forum'] = forum
             comment['topic_number'] = item['number']
+            comment['order'] = order
+            order = order + 1
             comment['username'] = post.xpath('.//td[@class="row2"]/a/text()').extract_first(default='')
             comment['date'] = post.xpath('.//div[@style="float:left;"]/text()').extract_first()
             content = post.xpath('.//span[@class="postcolor"]/div/text() | .//span[@class="postcolor"]/div/*/text()')
@@ -66,6 +73,7 @@ class MedSpider(CrawlSpider):
         if next != '':
             request = Request(next, callback=self.parse_item)
             request.meta['item'] = item
+            request.meta['order'] = order
             yield request
         else:
             yield item

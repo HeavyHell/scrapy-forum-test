@@ -22,6 +22,7 @@ class TopicItem(Item):
 
 class CommentItem(Item):
     topic_number = Field()
+    order = Field()
     forum = Field()
     username = Field()
     date = Field()

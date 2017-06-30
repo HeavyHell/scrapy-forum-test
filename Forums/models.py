@@ -42,6 +42,7 @@ class Comments(DeclarativeBase):
     id = Column(Integer, primary_key=True)
     forum = Column('forum', Integer)
     topic_number = Column('topic_number', Integer)
+    order = Column('order', Integer)
     username = Column('username', String, nullable=True)
     date = Column('date', Date, nullable=True)
     scraping_date = Column('scraping_date', DateTime, nullable=True)
