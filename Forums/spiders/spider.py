@@ -10,22 +10,13 @@ from ..items import TopicItem, CommentItem
 
 class MedSpider(CrawlSpider):
     name = 'medpred'
-
-    FORUMS = 81
     allowed_domains = ['medpred.co.ua']
+    start_urls = ['http://medpred.co.ua/forum']
     rules = (
         Rule(LinkExtractor(restrict_xpaths=('.//td[@class="row2" and @align="left"]/a')), callback='parse_item'),
-        Rule(LinkExtractor(restrict_xpaths=('//a[./text()="Далее"]')), follow=True),
+        Rule(LinkExtractor(restrict_xpaths=('.//a[./text()="Далее"]')), follow=True),
+        Rule(LinkExtractor(restrict_xpaths=('.//td[@class="row2" and @align="left"]/strong/a')), follow=True)
     )
-
-    def __init__(self, forum = '', *args, **kwargs):
-        super(MedSpider, self).__init__(*args, **kwargs)
-        if forum.upper() == 'ALL':
-            self.start_urls = [r"http://medpred.co.ua/forum/forum_{}".format(page) for page in range(1, self.FORUMS)]
-        elif forum != '':
-            self.start_urls = [r"http://medpred.co.ua/forum/forum_"+forum]
-        else:
-            self.logger.debug('ERROR: ')
 
     def parse_item(self, response):
         self.logger.info('Item %s', response.url)
@@ -33,6 +24,7 @@ class MedSpider(CrawlSpider):
         table = sel.xpath('.//table[@class="ipbtable"][@cellspacing="1"]')
         forum = sel.xpath('//div[@style="font-weight:bold; font-size:12px;"]/a[3]/@href').extract_first(default='')
         forum = re.search(r'\d+', forum).group(0)
+
 
         if 'item' in response.meta:
             item = response.meta['item']
